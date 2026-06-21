@@ -374,7 +374,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .jmsg-c{color:#94a3b8;flex:1;}
 </style>
 </head>
-<body>
+<body style="overflow:hidden;margin:0;padding:0">
+<div id="sim-wrapper" style="transform-origin:top left">
 <div id="app">
 
 <!-- HEADER -->
@@ -2726,6 +2727,35 @@ function closeQR(){
 document.getElementById('modal-qr').addEventListener('click', function(e){
   if(e.target === this) closeQR();
 });
+
+// ── FORMAT D'AFFICHAGE (tablette / ordinateur) ────────────────────────────────
+(function(){
+  const fmt = new URLSearchParams(window.location.search).get('format');
+  if (fmt === 'tablette') {
+    function applyTabletteScale() {
+      const wrapper = document.getElementById('sim-wrapper');
+      wrapper.style.transform = 'none';
+      wrapper.style.width = 'auto';
+      wrapper.style.height = 'auto';
+      const simW = wrapper.scrollWidth;
+      const simH = wrapper.scrollHeight;
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+      const scale = Math.min(screenW / simW, screenH / simH, 1);
+      wrapper.style.transform = 'scale(' + scale + ')';
+      wrapper.style.transformOrigin = 'top left';
+      wrapper.style.width = simW + 'px';
+      wrapper.style.height = simH + 'px';
+      document.body.style.overflow = 'hidden';
+      document.body.style.width = screenW + 'px';
+      document.body.style.height = screenH + 'px';
+    }
+    setTimeout(applyTabletteScale, 100);
+    window.addEventListener('resize', applyTabletteScale);
+  }
+})();
+// ─────────────────────────────────────────────────────────────────────────────
 </script>
+</div><!-- /sim-wrapper -->
 </body>
 </html>
